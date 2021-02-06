@@ -345,7 +345,6 @@ namespace DSharpPlus
 
                 default:
                     await OnUnknownEventAsync(payload).ConfigureAwait(false);
-                    this.Logger.LogWarning(LoggerEvents.WebSocketReceive, "Unknown event: {0}\npayload: {1}", payload.EventName, payload.Data);
                     break;
 
                 #endregion
@@ -1722,6 +1721,10 @@ namespace DSharpPlus
         {
             var ea = new UnknownEventArgs { EventName = payload.EventName, Json = (payload.Data as JObject)?.ToString() };
             await this._unknownEvent.InvokeAsync(this, ea).ConfigureAwait(false);
+            if (!ea.Handled)
+            {
+                this.Logger.LogWarning(LoggerEvents.WebSocketReceive, "Unknown event: {0}\npayload: {1}", payload.EventName, payload.Data);
+            }
         }
 
         #endregion
